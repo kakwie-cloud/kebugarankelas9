@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif PJOK Kelas IX - Kebugaran Jasmani</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti for Quiz celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 flex flex-col min-h-screen custom-scrollbar">
+
+    <!-- HEADER & NAVIGATION -->
+    <header class="bg-gradient-to-r from-blue-700 via-blue-600 to-emerald-600 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('beranda')">
+                    <div class="p-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                        <i data-lucide="activity" class="w-6 h-6 text-emerald-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-base md:text-lg leading-tight tracking-wide">PJOK KELAS IX</h1>
+                        <p class="text-[10px] md:text-xs text-blue-100 font-medium">Kebugaran Jasmani Interaktif</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5 active">
+                        <i data-lucide="home" class="w-4 h-4"></i><span>Beranda</span>
+                    </button>
+                    <button onclick="switchTab('tujuan')" id="nav-tujuan" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5">
+                        <i data-lucide="target" class="w-4 h-4"></i><span>Tujuan</span>
+                    </button>
+                    <button onclick="switchTab('materi')" id="nav-materi" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5">
+                        <i data-lucide="book-open" class="w-4 h-4"></i><span>Materi</span>
+                    </button>
+                    <button onclick="switchTab('praktik')" id="nav-praktik" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5">
+                        <i data-lucide="dumb-bell" class="w-4 h-4"></i><span>Praktik</span>
+                    </button>
+                    <button onclick="switchTab('kuis')" id="nav-kuis" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i><span>Kuis</span>
+                    </button>
+                    <button onclick="switchTab('evaluasi')" id="nav-evaluasi" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold hover:bg-white/15 transition flex items-center space-x-1.5">
+                        <i data-lucide="award" class="w-4 h-4"></i><span>Evaluasi</span>
+                    </button>
+                </nav>
+
+                <!-- Configuration Modal Button -->
+                <button onclick="openConfigModal()" class="p-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg shadow transition flex items-center gap-1.5 text-xs font-bold" title="Pengaturan Integrasi Google">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Integrasi Google</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Bar Kemajuan -->
+        <div class="w-full bg-blue-900/40 h-1.5">
+            <div id="progress-bar" class="bg-amber-400 h-1.5 w-[20%] transition-all duration-500 ease-out"></div>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 flex justify-around p-2 shadow-lg text-slate-600">
+        <button onclick="switchTab('beranda')" class="mobile-nav-btn flex flex-col items-center p-1 text-blue-600 font-medium" id="mnav-beranda">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Beranda</span>
+        </button>
+        <button onclick="switchTab('tujuan')" class="mobile-nav-btn flex flex-col items-center p-1" id="mnav-tujuan">
+            <i data-lucide="target" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Tujuan</span>
+        </button>
+        <button onclick="switchTab('materi')" class="mobile-nav-btn flex flex-col items-center p-1" id="mnav-materi">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Materi</span>
+        </button>
+        <button onclick="switchTab('praktik')" class="mobile-nav-btn flex flex-col items-center p-1" id="mnav-praktik">
+            <i data-lucide="dumb-bell" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Praktik</span>
+        </button>
+        <button onclick="switchTab('kuis')" class="mobile-nav-btn flex flex-col items-center p-1" id="mnav-kuis">
+            <i data-lucide="help-circle" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Kuis</span>
+        </button>
+        <button onclick="switchTab('evaluasi')" class="mobile-nav-btn flex flex-col items-center p-1" id="mnav-evaluasi">
+            <i data-lucide="award" class="w-5 h-5"></i>
+            <span class="text-[10px] mt-0.5">Evaluasi</span>
+        </button>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 mb-16 md:mb-6">
+
+        <!-- SECTION 1: BERANDA -->
+        <section id="beranda" class="tab-content active space-y-8">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl bg-gradient-to-br from-blue-700 via-blue-800 to-emerald-700 text-white p-6 sm:p-10 overflow-hidden shadow-xl border border-blue-600">
+                <div class="absolute -right-10 -bottom-10 opacity-15 pointer-events-none">
+                    <svg width="400" height="400" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="100" cy="100" r="80" stroke="white" stroke-width="12" />
+                        <path d="M60 100 Q100 40 140 100 T220 100" stroke="white" stroke-width="8" fill="none" />
+                    </svg>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-block px-3 py-1 bg-amber-400 text-slate-900 rounded-full font-extrabold text-xs mb-3 shadow">
+                        PJOK KELAS IX SMP
+                    </span>
+                    <h2 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-3">
+                        MARI TINGKATKAN KEBUGARAN JASMANI!
+                    </h2>
+                    <p class="text-blue-100 text-sm sm:text-base mb-6 leading-relaxed">
+                        Selamat datang di modul pembelajaran interaktif kebugaran jasmani. Pelajari konsep kekuatan, kelenturan, dan daya tahan tubuh dengan visualisasi menarik, panduan latihan aman, serta evaluasi kuis mandiri!
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchTab('tujuan')" class="px-6 py-3.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-extrabold rounded-xl shadow-lg hover:shadow-amber-400/30 transition flex items-center gap-2 transform hover:-translate-y-0.5">
+                            <span>Mulai Belajar Sekarang</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        </button>
+                        <a id="btn-gdocs-hero" href="#" target="_blank" onclick="checkGDocsLink(event)" class="px-5 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 backdrop-blur-md transition flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5 text-blue-300"></i>
+                            <span>Materi Google Docs</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Identitas Siswa Widget -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-2.5 bg-blue-100 text-blue-700 rounded-xl">
+                        <i data-lucide="user-check" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg">Identitas Peserta Didik</h3>
+                        <p class="text-xs text-slate-500">Isi nama dan kelas Anda untuk menyimpan hasil kuis & refleksi</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Lengkap</label>
+                        <input type="text" id="user-name" placeholder="Masukkan nama lengkap siswa..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kelas</label>
+                        <select id="user-class" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm">
+                            <option value="">-- Pilih Kelas IX --</option>
+                            <option value="IX-A">IX - A</option>
+                            <option value="IX-B">IX - B</option>
+                            <option value="IX-C">IX - C</option>
+                            <option value="IX-D">IX - D</option>
+                            <option value="IX-E">IX - E</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tiga Pilar Utama Kebugaran Jasmani Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Kekuatan -->
+                <div onclick="switchTab('materi'); selectMateriTab('kekuatan')" class="bg-gradient-to-b from-blue-50 to-white p-6 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition cursor-pointer group">
+                    <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="biceps-flexed" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">1. Kekuatan</h3>
+                    <p class="text-slate-600 text-sm mb-4">Kemampuan otot untuk menerima beban saat melakukan aktivitas fisik berat.</p>
+                    <span class="text-blue-600 text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Pelajari Kekuatan <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </span>
+                </div>
+
+                <!-- Kelenturan -->
+                <div onclick="switchTab('materi'); selectMateriTab('kelenturan')" class="bg-gradient-to-b from-emerald-50 to-white p-6 rounded-2xl border border-emerald-100 shadow-sm hover:shadow-md transition cursor-pointer group">
+                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="stretch-horizontal" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">2. Kelenturan</h3>
+                    <p class="text-slate-600 text-sm mb-4">Kemampuan sendi untuk melakukan gerakan ruang gerak maksimal secara optimal.</p>
+                    <span class="text-emerald-600 text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Pelajari Kelenturan <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </span>
+                </div>
+
+                <!-- Daya Tahan -->
+                <div onclick="switchTab('materi'); selectMateriTab('dayatahan')" class="bg-gradient-to-b from-amber-50 to-white p-6 rounded-2xl border border-amber-100 shadow-sm hover:shadow-md transition cursor-pointer group">
+                    <div class="w-12 h-12 bg-amber-500 text-white rounded-xl flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform">
+                        <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">3. Daya Tahan</h3>
+                    <p class="text-slate-600 text-sm mb-4">Kemampuan organ (jantung & paru) bekerja lama tanpa mengalami kelelahan berlebih.</p>
+                    <span class="text-amber-600 text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Pelajari Daya Tahan <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: TUJUAN PEMBELAJARAN -->
+        <section id="tujuan" class="tab-content space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="max-w-3xl">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 font-bold text-xs rounded-full uppercase tracking-wider">Capaian Pembelajaran</span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2 mb-4">Tujuan & Capaian Pembelajaran</h2>
+                    <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-6">
+                        Melalui media pembelajaran interaktif ini, peserta didik Kelas IX SMP diharapkan mampu memahami konsep kebugaran jasmani serta mempraktikkan latihan kebugaran secara mandiri dan aman.
+                    </p>
+                </div>
+
+                <!-- Modul Pengertian & Manfaat Kebugaran Jasmani -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-blue-50/70 p-5 rounded-2xl border border-blue-100">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="p-2 bg-blue-600 text-white rounded-lg">
+                                <i data-lucide="book-open-check" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="font-bold text-blue-900 text-base">Apa itu Kebugaran Jasmani?</h3>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <strong>Kebugaran Jasmani</strong> adalah kemampuan tubuh seseorang untuk melakukan aktivitas harian tanpa mengalami kelelahan yang berlebihan, serta masih memiliki cadangan tenaga untuk menikmati waktu luang atau menghadapi keadaan darurat mendadak.
+                        </p>
+                    </div>
+
+                    <div class="bg-emerald-50/70 p-5 rounded-2xl border border-emerald-100">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <div class="p-2 bg-emerald-600 text-white rounded-lg">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <h3 class="font-bold text-emerald-900 text-base">Manfaat Kebugaran Jasmani</h3>
+                        </div>
+                        <ul class="text-xs sm:text-sm text-slate-700 space-y-1.5 list-disc list-inside">
+                            <li>Meningkatkan fungsi jantung, paru-paru, dan sirkulasi darah.</li>
+                            <li>Menguatkan otot, tulang, dan sendi usia pertumbuhan.</li>
+                            <li>Menjaga berat badan ideal dan mencegah obesitas.</li>
+                            <li>Meningkatkan konsentrasi belajar & menjaga kesehatan mental.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- List Target Pembelajaran -->
+                <h3 class="font-extrabold text-slate-800 text-lg mb-4">Target Indikator Keberhasilan</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-1 bg-emerald-500 text-white rounded-full mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Memahami Komponen Utama</h4>
+                            <p class="text-xs text-slate-500">Mampu mengidentifikasi komponen kekuatan, kelenturan, dan daya tahan jasmani.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-1 bg-emerald-500 text-white rounded-full mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Memperagakan Gerakan Benar</h4>
+                            <p class="text-xs text-slate-500">Memahami teknik dan posisi tubuh yang aman saat berlatih push-up, squat, stretching, dll.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-1 bg-emerald-500 text-white rounded-full mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Prinsip Keselamatan</h4>
+                            <p class="text-xs text-slate-500">Menerapkan prosedur pemanasan, pendinginan, hidrasi, dan mendengarkan respon tubuh.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="p-1 bg-emerald-500 text-white rounded-full mt-0.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-800">Evaluasi & Refleksi Self-Care</h4>
+                            <p class="text-xs text-slate-500">Mampu mengukur pencapaian kuis dan merefleksikan tingkat kebugaran pribadi secara jujur.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-slate-200 flex justify-end">
+                    <button onclick="switchTab('materi')" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow transition flex items-center gap-2">
+                        <span>Lanjut ke Materi Belajar</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: MATERI INTERAKTIF -->
+        <section id="materi" class="tab-content space-y-6">
+            <!-- Navigation Sub-Tabs -->
+            <div class="flex border-b border-slate-200 bg-white p-2 rounded-2xl shadow-sm space-x-2">
+                <button onclick="selectMateriTab('kekuatan')" id="subtab-kekuatan" class="subtab-btn flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 bg-blue-600 text-white shadow">
+                    <i data-lucide="biceps-flexed" class="w-4 h-4"></i><span>A. Kekuatan</span>
+                </button>
+                <button onclick="selectMateriTab('kelenturan')" id="subtab-kelenturan" class="subtab-btn flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="stretch-horizontal" class="w-4 h-4"></i><span>B. Kelenturan</span>
+                </button>
+                <button onclick="selectMateriTab('dayatahan')" id="subtab-dayatahan" class="subtab-btn flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 text-slate-600 hover:bg-slate-100">
+                    <i data-lucide="heart-pulse" class="w-4 h-4"></i><span>C. Daya Tahan</span>
+                </button>
+            </div>
+
+            <!-- Content Sub-Tab 1: Kekuatan -->
+            <div id="materi-kekuatan" class="materi-content space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-2xl font-extrabold text-blue-900 mb-2">A. Kekuatan Otot (Muscular Strength)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                        <strong>Pengertian:</strong> Kekuatan otot adalah tegangan maksimum yang dikeluarkan oleh otot atau sekelompok otot untuk melawan suatu beban atau tahanan dalam satu usaha.
+                    </p>
+                    <div class="bg-blue-50 p-4 rounded-xl text-blue-900 text-xs sm:text-sm font-medium border-l-4 border-blue-600">
+                        💡 <strong>Manfaat Kekuatan Otot:</strong> Memperkuat struktur tulang dan sendi, meningkatkan postur tubuh tegak, mengurangi risiko cedera saat aktivitas fisik, dan mempermudah pekerjaan fisik harian.
+                    </div>
+                </div>
+
+                <!-- Interactive Exercise Cards for Strength -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Push-Up -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <!-- Interactive SVG Push Up Graphic -->
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <path d="M 20 100 L 180 100" stroke="#cbd5e1" stroke-width="4" stroke-dasharray="4"/>
+                                    <!-- Person Body Plank Pushup -->
+                                    <circle cx="45" cy="55" r="10" fill="#2563eb" />
+                                    <line x1="45" y1="65" x2="120" y2="78" stroke="#2563eb" stroke-width="8" stroke-linecap="round" />
+                                    <line x1="120" y1="78" x2="165" y2="95" stroke="#2563eb" stroke-width="7" stroke-linecap="round" />
+                                    <!-- Arms Pushup -->
+                                    <path d="M 60 67 L 60 95 L 75 95" stroke="#1d4ed8" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-blue-100 text-blue-700 font-bold text-[10px] rounded-full uppercase">Otot Dada, Triceps & Bahu</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Push-Up</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Latihan menurunkan dan mengangkat tubuh dengan bertumpu pada telapak tangan dan ujung kaki.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Teknik Gerakan Benar:</h5>
+                            <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
+                                <li>Tubuh membentuk garis lurus dari kepala hingga tumit.</li>
+                                <li>Turunkan dada hingga hampir menyentuh lantai.</li>
+                                <li>Hembuskan napas saat mendorong tubuh ke atas.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Squat -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <line x1="20" y1="105" x2="180" y2="105" stroke="#cbd5e1" stroke-width="4"/>
+                                    <!-- Squat figure -->
+                                    <circle cx="100" cy="35" r="10" fill="#2563eb"/>
+                                    <!-- Body -->
+                                    <line x1="100" y1="45" x2="95" y2="70" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+                                    <!-- Thighs & Legs squatting -->
+                                    <polyline points="95,70 125,70 115,105" stroke="#2563eb" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <!-- Arms extended -->
+                                    <line x1="100" y1="52" x2="135" y2="52" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-blue-100 text-blue-700 font-bold text-[10px] rounded-full uppercase">Otot Paha (Quadriceps) & Pantat</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Squat</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Latihan menekuk lutut hingga paha sejajar lantai seperti posisi hendak duduk di kursi.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Teknik Gerakan Benar:</h5>
+                            <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
+                                <li>Buka kaki selebar bahu.</li>
+                                <li>Dorong pinggul ke belakang, bukan lutut ke depan melebihi ujung jari kaki.</li>
+                                <li>Punggung tetap tegak lurus, tidak membongkok.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Plank -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <line x1="20" y1="100" x2="180" y2="100" stroke="#cbd5e1" stroke-width="4"/>
+                                    <!-- Plank figure -->
+                                    <circle cx="45" cy="65" r="10" fill="#2563eb"/>
+                                    <line x1="45" y1="75" x2="155" y2="75" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+                                    <polyline points="55,75 55,98 70,98" stroke="#1d4ed8" stroke-width="5" fill="none" stroke-linecap="round"/>
+                                    <line x1="155" y1="75" x2="160" y2="98" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-blue-100 text-blue-700 font-bold text-[10px] rounded-full uppercase">Otot Perut (Core) & Punggung</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Plank Isometric</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Latihan menahan posisi tubuh sejajar datar dengan tumpuan pada siku dan ujung kaki.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Teknik Gerakan Benar:</h5>
+                            <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
+                                <li>Kencangkan otot perut dan pantat.</li>
+                                <li>Jangan biarkan pinggang melengkung turun ke bawah.</li>
+                                <li>Bernapaslah secara teratur, tahan 20–30 detik.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sub-Tab 2: Kelenturan -->
+            <div id="materi-kelenturan" class="materi-content space-y-6 hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-2xl font-extrabold text-emerald-900 mb-2">B. Kelenturan (Flexibility)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                        <strong>Pengertian:</strong> Kelenturan adalah kemampuan sendi dan otot di sekitarnya untuk bergerak secara bebas dan maksimal sesuai dengan ruang geraknya (Range of Motion) tanpa menimbulkan nyeri.
+                    </p>
+                    <div class="bg-emerald-50 p-4 rounded-xl text-emerald-900 text-xs sm:text-sm font-medium border-l-4 border-emerald-600">
+                        💡 <strong>Manfaat Kelenturan:</strong> Menjaga fleksibilitas gerak tubuh, mencegah kram dan kekakuan otot, mempercepat pemulihan setelah berolahraga, serta menjaga kesehatan tulang belakang.
+                    </div>
+                </div>
+
+                <!-- Exercise Cards Flexibility -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Peregangan Dinamis -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <circle cx="100" cy="30" r="9" fill="#059669"/>
+                                    <line x1="100" y1="39" x2="100" y2="75" stroke="#059669" stroke-width="7" stroke-linecap="round"/>
+                                    <!-- Dynamic Arm Swings -->
+                                    <path d="M 60 45 C 80 35, 120 35, 140 45" stroke="#10b981" stroke-width="5" fill="none" stroke-dasharray="4"/>
+                                    <line x1="100" y1="48" x2="60" y2="45" stroke="#059669" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="100" y1="48" x2="140" y2="45" stroke="#059669" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="100" y1="75" x2="85" y2="108" stroke="#059669" stroke-width="6"/>
+                                    <line x1="100" y1="75" x2="115" y2="108" stroke="#059669" stroke-width="6"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full uppercase">Sendi Bahu & Pinggang</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Peregangan Dinamis</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Gerakan meregangkan otot dengan gerakan berulang ritmis (misal: memutar lengan, memutar pinggang).
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Petunjuk Gerakan:</h5>
+                            <p class="text-[11px] text-slate-600">Lakukan gerakan ayunan secara terkontrol tanpa dipaksa secara hentakan keras. Cocok untuk pemanasan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Peregangan Statis (Cium Lutut / Hamstring) -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <line x1="30" y1="95" x2="170" y2="95" stroke="#cbd5e1" stroke-width="4"/>
+                                    <!-- Seated Hamstring Stretch -->
+                                    <line x1="60" y1="90" x2="150" y2="90" stroke="#059669" stroke-width="7" stroke-linecap="round"/>
+                                    <circle cx="110" cy="70" r="9" fill="#059669"/>
+                                    <path d="M 60 90 Q 90 60 110 70" stroke="#059669" stroke-width="7" fill="none" stroke-linecap="round"/>
+                                    <line x1="95" y1="72" x2="140" y2="88" stroke="#047857" stroke-width="5" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full uppercase">Paha Belakang (Hamstring) & Punggung</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Peregangan Statis</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Menahan posisi regangan otot diam dalam jangka waktu tertentu (10–15 detik) tanpa berpindah posisi.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Petunjuk Gerakan:</h5>
+                            <p class="text-[11px] text-slate-600">Rasakan sensasi tarikan lembut pada otot, tahan tanpa memantul-mantulkan badan. Sangat baik untuk pendinginan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Peregangan Bahu & Tungkai -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <circle cx="100" cy="30" r="9" fill="#059669"/>
+                                    <line x1="100" y1="39" x2="100" y2="75" stroke="#059669" stroke-width="7"/>
+                                    <!-- Cross shoulder stretch arm -->
+                                    <line x1="100" y1="48" x2="60" y2="52" stroke="#059669" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="75" y1="38" x2="75" y2="65" stroke="#047857" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="100" y1="75" x2="85" y2="108" stroke="#059669" stroke-width="6"/>
+                                    <line x1="100" y1="75" x2="115" y2="108" stroke="#059669" stroke-width="6"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 font-bold text-[10px] rounded-full uppercase">Pundak & Bahu Depan</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Peregangan Bahu</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Menarik satu lengan menyilang di depan dada menggunakan bantuan lengan lainnya.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Petunjuk Gerakan:</h5>
+                            <p class="text-[11px] text-slate-600">Jaga agar bahu tetap rileks (tidak terangkat mendekati telinga). Tahan selama 12–15 detik tiap sisi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Sub-Tab 3: Daya Tahan -->
+            <div id="materi-dayatahan" class="materi-content space-y-6 hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="text-2xl font-extrabold text-amber-900 mb-2">C. Daya Tahan (Endurance)</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed mb-4">
+                        <strong>Pengertian:</strong> Daya tahan adalah kemampuan organ tubuh (terutama jantung, paru-paru, dan pembuluh darah) serta otot untuk bekerja secara konsisten dalam kurun waktu yang cukup lama tanpa merasa lelah berat.
+                    </p>
+                    <div class="bg-amber-50 p-4 rounded-xl text-amber-900 text-xs sm:text-sm font-medium border-l-4 border-amber-500">
+                        💡 <strong>Manfaat Daya Tahan:</strong> Melatih efisiensi kerja jantung, meningkatkan kapasitas udara paru-paru, melancarkan metabolisme energi, serta menjaga ketahanan tubuh dari stamina lesu.
+                    </div>
+                </div>
+
+                <!-- Exercise Cards Endurance -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Jogging / Jalan Cepat -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <!-- Runner stick figure -->
+                                    <circle cx="110" cy="30" r="9" fill="#d97706"/>
+                                    <line x1="110" y1="39" x2="95" y2="70" stroke="#d97706" stroke-width="7" stroke-linecap="round"/>
+                                    <!-- Running arms -->
+                                    <line x1="102" y1="48" x2="125" y2="55" stroke="#b45309" stroke-width="5" stroke-linecap="round"/>
+                                    <line x1="102" y1="48" x2="75" y2="58" stroke="#b45309" stroke-width="5" stroke-linecap="round"/>
+                                    <!-- Running legs -->
+                                    <line x1="95" y1="70" x2="130" y2="85" stroke="#d97706" stroke-width="6" stroke-linecap="round"/>
+                                    <polyline points="95,70 70,85 60,105" stroke="#d97706" stroke-width="6" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold text-[10px] rounded-full uppercase">Kardiovaskular (Jantung & Paru)</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Jogging & Jalan Cepat</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Aktivitas aerobik paling sederhana dengan melangkah atau berlari santai secara terus menerus.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Intensitas Latihan Usia SMP:</h5>
+                            <p class="text-[11px] text-slate-600">Lakukan dengan ritme konsisten selama 15–20 menit. Jaga agar napas tetap terkontrol (bisa mengobrol santai tanpa terengah-engah parah).</p>
+                        </div>
+                    </div>
+
+                    <!-- Bersepeda -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <!-- Bike Wheels -->
+                                    <circle cx="55" cy="80" r="22" stroke="#d97706" stroke-width="4" fill="none"/>
+                                    <circle cx="145" cy="80" r="22" stroke="#d97706" stroke-width="4" fill="none"/>
+                                    <!-- Frame -->
+                                    <polyline points="55,80 85,80 115,55 145,80" stroke="#b45309" stroke-width="4" fill="none"/>
+                                    <line x1="85" y1="80" x2="100" y2="55" stroke="#b45309" stroke-width="4"/>
+                                    <!-- Cyclist head -->
+                                    <circle cx="95" cy="30" r="8" fill="#d97706"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold text-[10px] rounded-full uppercase">Stamina Tungkai & Paru</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Bersepeda Rekreasional</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Mengayuh sepeda di area aman yang melatih ketahanan otot kaki tanpa tekanan benturan berlebih pada sendi.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Intensitas Latihan:</h5>
+                            <p class="text-[11px] text-slate-600">Lakukan selama 20–30 menit di medan datar dengan mengutamakan keselamatan dan penggunaan helm.</p>
+                        </div>
+                    </div>
+
+                    <!-- Latihan Sirkuit Sederhana -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col justify-between">
+                        <div class="p-5">
+                            <div class="h-40 bg-slate-100 rounded-xl flex items-center justify-center mb-4 border border-slate-200">
+                                <svg width="180" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <rect width="200" height="120" fill="#f8fafc" rx="8"/>
+                                    <circle cx="100" cy="60" r="35" stroke="#d97706" stroke-width="4" stroke-dasharray="6,6" fill="none"/>
+                                    <circle cx="100" cy="25" r="8" fill="#b45309"/>
+                                    <circle cx="135" cy="60" r="8" fill="#b45309"/>
+                                    <circle cx="100" cy="95" r="8" fill="#b45309"/>
+                                    <circle cx="65" cy="60" r="8" fill="#b45309"/>
+                                </svg>
+                            </div>
+                            <span class="px-2.5 py-1 bg-amber-100 text-amber-800 font-bold text-[10px] rounded-full uppercase">Kombinasi Otot & Jantung</span>
+                            <h4 class="text-lg font-extrabold text-slate-800 mt-2 mb-1">Latihan Sirkuit (Circuit)</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                Mengombinasikan pos gerakan (Jumping Jacks, Squat, Push Up) berurutan dengan jeda istirahat singkat.
+                            </p>
+                        </div>
+                        <div class="p-5 bg-slate-50 border-t border-slate-100">
+                            <h5 class="font-bold text-xs text-slate-700 mb-1">Intensitas Latihan:</h5>
+                            <p class="text-[11px] text-slate-600">3 Pos gerakan x 30 detik kerja, diulang 2-3 putaran. Istirahat 1 menit antar putaran.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: AKTIVITAS PRAKTIK -->
+        <section id="praktik" class="tab-content space-y-6">
+            <!-- Safety Alert Notice Box -->
+            <div class="bg-amber-50 rounded-2xl p-5 border-2 border-amber-300 flex items-start space-x-4 shadow-sm">
+                <div class="p-2 bg-amber-500 text-white rounded-xl mt-0.5 flex-shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="font-extrabold text-amber-900 text-base">Prinsip Keselamatan Berolahraga (Sangat Penting!)</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-xs text-amber-950 font-medium">
+                        <div class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-amber-600"></i> Wajib Pemanasan 5-10 menit sebelum mulai.</div>
+                        <div class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-amber-600"></i> Siapkan air minum & jaga hidrasi tubuh.</div>
+                        <div class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-amber-600"></i> Hentikan latihan jika terasa pusing / nyeri menusuk.</div>
+                        <div class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-amber-600"></i> Lakukan Pendinginan 5 menit setelah latihan.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guided Practice Routine -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="text-xl font-extrabold text-slate-900 mb-1">Jurnal Lembar Kerja Praktik Mandiri</h3>
+                <p class="text-xs text-slate-500 mb-6">Pilih dan praktikkan rangkaian latihan sederhana di bawah ini sesuai kemampuan fisikmu!</p>
+
+                <div class="space-y-6">
+                    <!-- Step 1: Push Up -->
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="px-2.5 py-0.5 bg-blue-600 text-white font-bold text-[10px] rounded-full">Langkah 1 - Kekuatan</span>
+                            <h4 class="font-bold text-slate-800 text-base">Latihan Push-Up Mandiri</h4>
+                            <p class="text-xs text-slate-600">Target: 8–10 Kali Pengulangan (2 Set)</p>
+                            <div class="text-[11px] text-amber-700 bg-amber-100 px-2 py-1 rounded inline-block mt-1">
+                                💡 <strong>Alternatif Ringan:</strong> Wall Push-up (dorong tembok) atau Knee Push-up (bertumpu pada lutut).
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="check-step1" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                            <label for="check-step1" class="text-xs font-bold text-slate-700">Sudah Selesai</label>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Flex Stretches -->
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="px-2.5 py-0.5 bg-emerald-600 text-white font-bold text-[10px] rounded-full">Langkah 2 - Kelenturan</span>
+                            <h4 class="font-bold text-slate-800 text-base">Peregangan Statis Hamstring & Bahu</h4>
+                            <p class="text-xs text-slate-600">Target: Tahan 15 detik tiap sisi anggota tubuh</p>
+                            <div class="text-[11px] text-amber-700 bg-amber-100 px-2 py-1 rounded inline-block mt-1">
+                                💡 <strong>Alternatif Ringan:</strong> Lakukan peregangan dalam posisi duduk rileks di kursi.
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="check-step2" class="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500">
+                            <label for="check-step2" class="text-xs font-bold text-slate-700">Sudah Selesai</label>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Jumping Jacks / Jogging -->
+                    <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <span class="px-2.5 py-0.5 bg-amber-500 text-white font-bold text-[10px] rounded-full">Langkah 3 - Daya Tahan</span>
+                            <h4 class="font-bold text-slate-800 text-base">Jumping Jacks ATAU Jogging di Tempat</h4>
+                            <p class="text-xs text-slate-600">Target: 1 Menit Non-Stop secara konstan</p>
+                            <div class="text-[11px] text-amber-700 bg-amber-100 px-2 py-1 rounded inline-block mt-1">
+                                💡 <strong>Alternatif Ringan:</strong> Jalan di tempat dengan ayunan lengan perlahan.
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="check-step3" class="w-5 h-5 text-amber-500 rounded focus:ring-amber-500">
+                            <label for="check-step3" class="text-xs font-bold text-slate-700">Sudah Selesai</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column Reflection Form -->
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-base mb-2">Kolom Catatan Refleksi Praktik</h4>
+                    <p class="text-xs text-slate-500 mb-3">Tuliskan respon tubuh atau tantangan yang kamu rasakan setelah mencoba gerakan di atas:</p>
+                    <textarea id="practice-reflection" rows="3" placeholder="Contoh: Saya merasa latihan push-up agak berat pada set kedua, namun peregangan bahu terasa sangat menyegarkan..." class="w-full p-3 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: KUIS INTERAKTIF -->
+        <section id="kuis" class="tab-content space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
+                <!-- Header Quiz -->
+                <div id="quiz-start-screen" class="text-center py-6 max-w-xl mx-auto">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                        <i data-lucide="help-circle" class="w-8 h-8"></i>
+                    </div>
+                    <h2 class="text-2xl font-black text-slate-900 mb-2">Uji Pemahaman Kebugaran Jasmani</h2>
+                    <p class="text-slate-600 text-xs sm:text-sm mb-6">
+                        Kuis terdiri dari <strong>15 Soal Pilihan Ganda</strong> acak seputar Kekuatan, Kelenturan, dan Daya Tahan. Nilai otomatis dihitung pada skala 0–100.
+                    </p>
+                    <button onclick="startQuiz()" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center gap-2 mx-auto">
+                        <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                        <span>Mulai Kuis Sekarang</span>
+                    </button>
+                </div>
+
+                <!-- Quiz Playing Area (Hidden initially) -->
+                <div id="quiz-play-screen" class="hidden space-y-6">
+                    <!-- Progress & Counter Header -->
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                        <div class="text-xs font-bold text-slate-500">
+                            Soal Ke- <span id="current-question-num" class="text-blue-600 text-base">1</span> dari <span id="total-questions-num">15</span>
+                        </div>
+                        <div class="bg-blue-100 text-blue-800 text-xs font-extrabold px-3 py-1 rounded-full">
+                            Skala Nilai MAX: 100
+                        </div>
+                    </div>
+
+                    <!-- Question Box -->
+                    <div>
+                        <h3 id="quiz-question-text" class="text-base sm:text-lg font-bold text-slate-800 leading-snug mb-4">
+                            -- Teks Soal Kuis Akan Muncul Di Sini --
+                        </h3>
+
+                        <!-- Answer Options Container -->
+                        <div id="quiz-options-container" class="space-y-3">
+                            <!-- Options dynamically rendered via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Feedback Box (Hidden initially) -->
+                    <div id="quiz-feedback-box" class="hidden p-4 rounded-xl border text-xs sm:text-sm">
+                        <!-- Feedback content via JS -->
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+                        <button id="btn-next-question" onclick="nextQuestion()" disabled class="px-6 py-2.5 bg-slate-300 text-slate-500 cursor-not-allowed font-extrabold rounded-xl transition flex items-center gap-2">
+                            <span>Soal Berikutnya</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Completed Summary View (Hidden initially) -->
+                <div id="quiz-result-screen" class="hidden text-center py-6 space-y-6 max-w-xl mx-auto">
+                    <div class="p-6 bg-gradient-to-br from-blue-50 to-emerald-50 rounded-3xl border border-slate-200">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Hasil Akhir Kuis</span>
+                        <div class="text-5xl sm:text-6xl font-black text-blue-700 my-3" id="final-score-display">0</div>
+                        <p id="score-message" class="text-sm font-bold text-slate-700 mb-4">-- Pesan Hasil Kuis --</p>
+                        
+                        <div class="grid grid-cols-2 gap-4 text-xs font-bold pt-2">
+                            <div class="p-3 bg-emerald-100 text-emerald-800 rounded-xl">
+                                Benar: <span id="count-correct" class="text-base">0</span> Soal
+                            </div>
+                            <div class="p-3 bg-rose-100 text-rose-800 rounded-xl">
+                                Salah: <span id="count-incorrect" class="text-base">0</span> Soal
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="startQuiz()" class="px-5 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs flex items-center gap-2">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                            <span>Ulangi Kuis</span>
+                        </button>
+                        <button onclick="switchTab('evaluasi')" class="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs flex items-center gap-2">
+                            <span>Lanjut ke Evaluasi & Refleksi</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: EVALUASI DAN REFLEKSI -->
+        <section id="evaluasi" class="tab-content space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-8">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 mb-1">Evaluasi & Rekomendasi Belajar</h2>
+                    <p class="text-xs text-slate-500">Rekapitulasi pencapaian kuis dan refleksi belajar pribadi peserta didik</p>
+                </div>
+
+                <!-- Status Nilai & Rekomendasi -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-5 bg-blue-50 rounded-2xl border border-blue-100 flex flex-col justify-center items-center text-center">
+                        <span class="text-xs font-bold text-blue-700">NILAI KUIS ANDA</span>
+                        <div id="eval-score" class="text-4xl font-extrabold text-blue-900 my-1">--</div>
+                        <span id="eval-status" class="text-[11px] px-2.5 py-0.5 bg-blue-200 text-blue-800 rounded-full font-bold">Belum Mengerjakan Kuis</span>
+                    </div>
+
+                    <div class="md:col-span-2 p-5 bg-slate-50 rounded-2xl border border-slate-200">
+                        <h4 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-1.5">
+                            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500"></i> Rekomendasi Guru
+                        </h4>
+                        <p id="eval-recommendation" class="text-xs text-slate-600 leading-relaxed">
+                            Silakan selesaikan kuis interaktif terlebih dahulu pada menu "Kuis" untuk mendapatkan analisis serta rekomendasi materi kebugaran jasmani yang perlu ditingkatkan.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Form Refleksi Pembelajaran -->
+                <div class="space-y-4 pt-4 border-t border-slate-200">
+                    <h3 class="font-extrabold text-slate-800 text-base">Pertanyaan Refleksi Siswa</h3>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">1. Apa hal terpenting yang baru kamu pelajari tentang kebugaran jasmani?</label>
+                        <textarea id="ref-q1" rows="2" placeholder="Tuliskan jawaban singkatmu..." class="w-full p-3 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">2. Dari 3 komponen (Kekuatan, Kelenturan, Daya Tahan), gerakan mana yang paling kamu kuasai?</label>
+                        <input type="text" id="ref-q2" placeholder="Misal: Saya paling menguasai latihan kelenturan peregangan statis..." class="w-full p-3 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">3. Latihan kebugaran mana yang masih perlu kamu tingkatkan ke depannya?</label>
+                        <input type="text" id="ref-q3" placeholder="Misal: Saya perlu meningkatkan daya tahan saat berlatih jogging..." class="w-full p-3 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Simpan Data & Integrasi Actions -->
+                <div class="pt-6 border-t border-slate-200 flex flex-wrap gap-3 items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        <a id="btn-gdocs-eval" href="#" target="_blank" onclick="checkGDocsLink(event)" class="px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl text-xs border border-blue-200 transition flex items-center gap-1.5">
+                            <i data-lucide="file-text" class="w-4 h-4"></i>
+                            <span>Materi (Google Docs)</span>
+                        </a>
+                        <a id="btn-gsheets-eval" href="#" target="_blank" onclick="checkGSheetsLink(event)" class="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl text-xs border border-emerald-200 transition flex items-center gap-1.5">
+                            <i data-lucide="table" class="w-4 h-4"></i>
+                            <span>Rekap Nilai (Google Sheets)</span>
+                        </a>
+                    </div>
+
+                    <button onclick="saveStudentData()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg transition flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Simpan Hasil ke Google Sheets</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CONFIGURATION MODAL (For Teacher Google Docs & Sheets URLs) -->
+    <div id="config-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-6">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2 text-slate-800">
+                    <i data-lucide="settings" class="w-5 h-5 text-blue-600"></i>
+                    <h3 class="font-extrabold text-lg">Konfigurasi Integrasi Google</h3>
+                </div>
+                <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-500 leading-relaxed">
+                Guru dapat memasukkan tautan Google Docs (bahan ajar/LKPD) dan Web App URL dari Google Apps Script untuk menyimpan rekap otomatis nilai kuis peserta didik ke Google Sheets.
+            </p>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Google Docs (Bahan Ajar / LKPD)</label>
+                    <input type="url" id="cfg-docs-url" placeholder="https://docs.google.com/document/d/..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Google Apps Script Web App URL (Penyimpanan Sheets)</label>
+                    <input type="url" id="cfg-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Google Sheets (Tampilan Rekap Nilai Guru)</label>
+                    <input type="url" id="cfg-sheets-url" placeholder="https://docs.google.com/spreadsheets/d/..." class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex justify-end space-x-3">
+                <button onclick="closeConfigModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">
+                    Batal
+                </button>
+                <button onclick="saveConfiguration()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow">
+                    Simpan Konfigurasi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Message -->
+    <div id="toast" class="fixed bottom-20 md:bottom-6 right-6 z-50 hidden bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 transition border border-slate-700 text-xs sm:text-sm">
+        <i data-lucide="info" id="toast-icon" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toast-message">Pesan Toast</span>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-slate-400 text-xs py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-2">
+            <p class="font-semibold text-slate-300">Media Pembelajaran Interaktif PJOK Kelas IX</p>
+            <p>Materi Kebugaran Jasmani - Kurikulum Merdeka SMP</p>
+            <p class="text-[10px] text-slate-500">Dirancang untuk Penggunaan Pembelajaran Digital PJOK SMP</p>
+        </div>
+    </footer>
+
+    <script>
+        /* -------------------------------------------------------------------------
+         * 1. BANK SOAL KUIS INTERAKTIF (15 SOAL KELAS IX)
+         * ------------------------------------------------------------------------- */
+        const ALL_QUESTIONS = [
+            {
+                q: "Kemampuan otot untuk melakukan kontraksi guna melawan suatu beban atau tahanan maksimum dinamakan...",
+                options: ["A. Kekuatan (Strength)", "B. Kelenturan (Flexibility)", "C. Daya Tahan (Endurance)", "D. Kecepatan (Speed)"],
+                answer: 0,
+                explanation: "Kekuatan (strength) adalah komponen kebugaran jasmani yang mengukur tegangan maksimum otot saat melawan beban."
+            },
+            {
+                q: "Berikut ini yang merupakan bentuk latihan dasar untuk melatih kekuatan otot dada dan lengan adalah...",
+                options: ["A. Jogging 15 menit", "B. Push-Up", "C. Peregangan statis", "D. Cium lutut"],
+                answer: 1,
+                explanation: "Push-up bertumpu pada dada dan lengan (triceps) untuk mengangkat bobot tubuh sendiri."
+            },
+            {
+                q: "Bentuk latihan otot perut secara isometrik dengan menahan posisi tubuh datar sejajar lantai dinamakan...",
+                options: ["A. Squat Jump", "B. Plank", "C. Back-Up", "D. Shuttle Run"],
+                answer: 1,
+                explanation: "Plank meregangkan dan mengencangkan otot perut (core) secara isometrik tanpa gerakan dinamis naik-turun."
+            },
+            {
+                q: "Kemampuan sendi untuk bergerak secara maksimal dalam ruang gerak sendi tanpa rasa nyeri disebut...",
+                options: ["A. Kelenturan", "B. Kecepatan", "C. Kelincahan", "D. Kekuatan"],
+                answer: 0,
+                explanation: "Kelenturan (flexibility) berfokus pada ruang gerak maksimal sendi dan elastisitas otot."
+            },
+            {
+                q: "Melakukan gerakan peregangan dengan menahan posisi diam selama 10 hingga 15 detik disebut...",
+                options: ["A. Peregangan Dinamis", "B. Peregangan Statis", "C. Latihan Anaerobik", "D. Latihan Sirkuit"],
+                answer: 1,
+                explanation: "Peregangan statis dilakukan dengan menahan posisi regangan tanpa gerakan memantul."
+            },
+            {
+                q: "Kemampuan organ jantung dan paru-paru untuk mengalirkan oksigen secara efisien saat beraktivitas lama disebut...",
+                options: ["A. Daya Tahan Jantung-Paru", "B. Kekuatan Otot", "C. Kelenturan Tubuh", "D. Power Otot"],
+                answer: 0,
+                explanation: "Daya tahan kardiovaskular mengukur kerja jantung dan paru-paru memasok oksigen dalam jangka panjang."
+            },
+            {
+                q: "Aktivitas fisik berikut yang paling efektif untuk meningkatkan daya tahan kardiovaskular adalah...",
+                options: ["A. Angkat beban berat", "B. Jogging dan bersepeda", "C. Push-up 3 kali", "D. Cium lutut 5 detik"],
+                answer: 1,
+                explanation: "Jogging dan bersepeda tergolong latihan aerobik yang melatih daya tahan jantung dan paru-paru."
+            },
+            {
+                q: "Sebelum memulai latihan kebugaran jasmani, kita diwajibkan melakukan...",
+                options: ["A. Pendinginan", "B. Makan makanan berat", "C. Pemanasan (Warming-up)", "D. Tidur sejenak"],
+                answer: 2,
+                explanation: "Pemanasan meningkatkan suhu tubuh dan menyiapkan detak jantung agar terhindar dari cedera."
+            },
+            {
+                q: "Latihan Squat sangat efektif untuk menguatkan otot pada bagian...",
+                options: ["A. Lengan dan bahu", "B. Paha dan pinggul", "C. Leher dan jari", "D. Dada dan triceps"],
+                answer: 1,
+                explanation: "Squat memfokuskan tumpuan pada otot paha depan (quadriceps) dan otot pinggul/gluteus."
+            },
+            {
+                q: "Karakteristik utama dari latihan daya tahan aerobik adalah...",
+                options: ["A. Berlangsung sangat cepat dalam 2 detik", "B. Menggunakan intensitas tinggi tanpa napas", "C. Berlangsung stabil dalam durasi yang relatif lama", "D. Membutuhkan alat medis berat"],
+                answer: 2,
+                explanation: "Latihan aerobik membutuhkan pasokan oksigen konstan untuk durasi latihan yang cukup panjang."
+            },
+            {
+                q: "Tujuan utama dari pendinginan (cooling-down) setelah berolahraga adalah...",
+                options: ["A. Mengembalikan denyut jantung secara bertahap ke kondisi normal", "B. Meningkatkan beban latihan", "C. Membakar lemak secara mendadak", "D. Mengurangi berat badan dalam hitungan menit"],
+                answer: 0,
+                explanation: "Pendinginan mencegah penumpukan asam laktat serta membantu menetralkan denyut jantung secara bertahap."
+            },
+            {
+                q: "Jika saat berolahraga peserta didik merasakan pusing hebat atau sakit dada, tindakan paling benar adalah...",
+                options: ["A. Memaksa terus berlari lebih cepat", "B. Meminum air es sebanyak-banyaknya", "C. Segera menghentikan latihan dan beristirahat", "D. Melakukan push-up cepat"],
+                answer: 2,
+                explanation: "Mendengarkan tanda bahaya tubuh sangat penting untuk menghindari komplikasi medis saat olahraga."
+            },
+            {
+                q: "Bentuk latihan kombinasi beberapa pos gerakan (seperti push-up, squat, jumping jack) berurutan disebut...",
+                options: ["A. Latihan Sirkuit (Circuit Training)", "B. Marathon", "C. Sprint 100 meter", "D. Yoga Statis"],
+                answer: 0,
+                explanation: "Latihan sirkuit menggabungkan beberapa jenis stasiun pos latihan yang dikerjakan berturut-turut."
+            },
+            {
+                q: "Peregangan dinamis sangat cocok dilaksanakan pada sesi...",
+                options: ["A. Saat tidur malam", "B. Sesi pemanasan sebelum olahraga", "C. Saat makan siang", "D. Setelah latihan selesai"],
+                answer: 1,
+                explanation: "Peregangan dinamis memobilisasi sendi dan menaikkan denyut nadi sebagai persiapan pemanasan."
+            },
+            {
+                q: "Manfaat utama menjaga kebugaran jasmani bagi seorang siswa SMP adalah...",
+                options: ["A. Agar tidak perlu belajar pelajaran lain", "B. Tubuh tetap sehat, konsentrasi belajar meningkat, dan tidak mudah lelah", "C. Menjadi juara di semua cabang olahraga profesional", "D. Menghindari sekolah"],
+                answer: 1,
+                explanation: "Kebugaran jasmani mendukung vitalitas tubuh, kesehatan otak, dan stamina fokus saat belajar di sekolah."
+            }
+        ];
+
+        /* -------------------------------------------------------------------------
+         * 2. STATE MANAGEMENT & APP INITIALIZATION
+         * ------------------------------------------------------------------------- */
+        let currentTab = 'beranda';
+        let currentMateriTab = 'kekuatan';
+        
+        // Quiz States
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let quizScore = 0;
+
+        // Configurations (Teacher Integrations)
+        let config = {
+            docsUrl: localStorage.getItem('pjok_docs_url') || '',
+            scriptUrl: localStorage.getItem('pjok_script_url') || '',
+            sheetsUrl: localStorage.getItem('pjok_sheets_url') || ''
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide Icons
+            lucide.createIcons();
+            
+            // Load configuration values into modal inputs if exists
+            document.getElementById('cfg-docs-url').value = config.docsUrl;
+            document.getElementById('cfg-script-url').value = config.scriptUrl;
+            document.getElementById('cfg-sheets-url').value = config.sheetsUrl;
+
+            // Load student identity if saved previously in localStorage
+            if(localStorage.getItem('pjok_user_name')) {
+                document.getElementById('user-name').value = localStorage.getItem('pjok_user_name');
+            }
+            if(localStorage.getItem('pjok_user_class')) {
+                document.getElementById('user-class').value = localStorage.getItem('pjok_user_class');
+            }
+        });
+
+        /* -------------------------------------------------------------------------
+         * 3. NAVIGATION & UI FUNCTIONS
+         * ------------------------------------------------------------------------- */
+        function switchTab(tabId) {
+            currentTab = tabId;
+            
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const targetTab = document.getElementById(tabId);
+            if(targetTab) targetTab.classList.add('active');
+
+            // Update Nav Buttons Desktop Style
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white/20', 'text-amber-300');
+            });
+            const activeDesktopNav = document.getElementById(`nav-${tabId}`);
+            if(activeDesktopNav) {
+                activeDesktopNav.classList.add('bg-white/20', 'text-amber-300');
+            }
+
+            // Update Nav Buttons Mobile Style
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'font-bold');
+                btn.classList.add('text-slate-600');
+            });
+            const activeMobileNav = document.getElementById(`mnav-${tabId}`);
+            if(activeMobileNav) {
+                activeMobileNav.classList.remove('text-slate-600');
+                activeMobileNav.classList.add('text-blue-600', 'font-bold');
+            }
+
+            // Update Progress Bar based on section
+            updateProgressBar(tabId);
+
+            // Scroll top smooth
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgressBar(tabId) {
+            const progressBar = document.getElementById('progress-bar');
+            const stages = {
+                'beranda': '20%',
+                'tujuan': '40%',
+                'materi': '60%',
+                'praktik': '80%',
+                'kuis': '90%',
+                'evaluasi': '100%'
+            };
+            if(progressBar && stages[tabId]) {
+                progressBar.style.width = stages[tabId];
+            }
+        }
+
+        function selectMateriTab(materiId) {
+            currentMateriTab = materiId;
+            
+            // Hide all subtab contents
+            document.querySelectorAll('.materi-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            
+            // Show selected content
+            const targetMateri = document.getElementById(`materi-${materiId}`);
+            if(targetMateri) targetMateri.classList.remove('hidden');
+
+            // Style buttons
+            document.querySelectorAll('.subtab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'bg-emerald-600', 'bg-amber-500', 'text-white', 'shadow');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-100');
+            });
+
+            const activeSubTab = document.getElementById(`subtab-${materiId}`);
+            if(activeSubTab) {
+                activeSubTab.classList.remove('text-slate-600', 'hover:bg-slate-100');
+                if(materiId === 'kekuatan') activeSubTab.classList.add('bg-blue-600', 'text-white', 'shadow');
+                if(materiId === 'kelenturan') activeSubTab.classList.add('bg-emerald-600', 'text-white', 'shadow');
+                if(materiId === 'dayatahan') activeSubTab.classList.add('bg-amber-500', 'text-white', 'shadow');
+            }
+        }
+
+        /* -------------------------------------------------------------------------
+         * 4. KUIS INTERAKTIF ENGINE
+         * ------------------------------------------------------------------------- */
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startQuiz() {
+            // Shuffle questions
+            activeQuestions = shuffleArray(ALL_QUESTIONS);
+            currentQuestionIndex = 0;
+            userAnswers = [];
+            quizScore = 0;
+
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const qData = activeQuestions[currentQuestionIndex];
+            
+            document.getElementById('current-question-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('total-questions-num').innerText = activeQuestions.length;
+            document.getElementById('quiz-question-text').innerText = qData.q;
+
+            // Reset feedback
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            feedbackBox.classList.add('hidden');
+            feedbackBox.className = "hidden p-4 rounded-xl border text-xs sm:text-sm";
+
+            // Reset Next Button
+            const nextBtn = document.getElementById('btn-next-question');
+            nextBtn.disabled = true;
+            nextBtn.className = "px-6 py-2.5 bg-slate-300 text-slate-500 cursor-not-allowed font-extrabold rounded-xl transition flex items-center gap-2";
+
+            // Render Options
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = '';
+
+            qData.options.forEach((optText, optIdx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "w-full text-left p-4 rounded-xl border border-slate-200 hover:border-blue-400 hover:bg-blue-50/50 transition font-medium text-xs sm:text-sm text-slate-700 flex items-center justify-between group";
+                optBtn.innerHTML = `
+                    <span>${optText}</span>
+                    <div class="w-5 h-5 rounded-full border border-slate-300 group-hover:border-blue-500 flex items-center justify-center text-[10px]"></div>
+                `;
+                optBtn.onclick = () => selectQuizAnswer(optIdx);
+                optionsContainer.appendChild(optBtn);
+            });
+        }
+
+        function selectQuizAnswer(selectedIndex) {
+            const qData = activeQuestions[currentQuestionIndex];
+            const isCorrect = (selectedIndex === qData.answer);
+
+            // Record Answer
+            userAnswers[currentQuestionIndex] = {
+                selected: selectedIndex,
+                correct: qData.answer,
+                isCorrect: isCorrect
+            };
+
+            // Disable all option buttons
+            const optionsContainer = document.getElementById('quiz-options-container');
+            const buttons = optionsContainer.querySelectorAll('button');
+            
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.remove('hover:border-blue-400', 'hover:bg-blue-50/50');
+                
+                if(idx === qData.answer) {
+                    btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-900', 'font-bold');
+                } else if(idx === selectedIndex && !isCorrect) {
+                    btn.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-900');
+                }
+            });
+
+            // Show Feedback
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            feedbackBox.classList.remove('hidden');
+            if(isCorrect) {
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-900');
+                feedbackBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 mb-1"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i> Jawaban Benar!</div>
+                    <p>${qData.explanation}</p>
+                `;
+            } else {
+                feedbackBox.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-900');
+                feedbackBox.innerHTML = `
+                    <div class="font-bold flex items-center gap-1.5 mb-1"><i data-lucide="x-circle" class="w-4 h-4 text-rose-600"></i> Jawaban Kurang Tepat!</div>
+                    <p>${qData.explanation}</p>
+                `;
+            }
+            lucide.createIcons();
+
+            // Enable Next Button
+            const nextBtn = document.getElementById('btn-next-question');
+            nextBtn.disabled = false;
+            nextBtn.className = "px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-xl shadow transition flex items-center gap-2 cursor-pointer";
+        }
+
+        function nextQuestion() {
+            if(currentQuestionIndex < activeQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            // Calculate final score scale 0-100
+            let correctCount = 0;
+            userAnswers.forEach(ans => {
+                if(ans && ans.isCorrect) correctCount++;
+            });
+
+            quizScore = Math.round((correctCount / activeQuestions.length) * 100);
+
+            // Update Result UI Screen
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            document.getElementById('final-score-display').innerText = quizScore;
+            document.getElementById('count-correct').innerText = correctCount;
+            document.getElementById('count-incorrect').innerText = activeQuestions.length - correctCount;
+
+            // Score Message & Confetti
+            const msgEl = document.getElementById('score-message');
+            if(quizScore >= 80) {
+                msgEl.innerText = "Sangat Baik! Pemahaman Kebugaran Jasmanimu Sangat Luar Biasa! 🎉";
+                msgEl.className = "text-sm font-bold text-emerald-600 mb-4";
+                try { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } catch(e){}
+            } else if(quizScore >= 60) {
+                msgEl.innerText = "Cukup Baik! Pelajari Kembali Materi yang Masih Kurang Dikuasai. 👍";
+                msgEl.className = "text-sm font-bold text-blue-600 mb-4";
+            } else {
+                msgEl.innerText = "Perlu Latihan Lagi! Ulangi Membaca Materi dan Coba Kuis Kembali. 💪";
+                msgEl.className = "text-sm font-bold text-amber-600 mb-4";
+            }
+
+            // Sync with Evaluasi Tab
+            document.getElementById('eval-score').innerText = quizScore;
+            const evalStatus = document.getElementById('eval-status');
+            const evalRec = document.getElementById('eval-recommendation');
+
+            if(quizScore >= 80) {
+                evalStatus.innerText = "Sangat Tuntas";
+                evalStatus.className = "text-[11px] px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold";
+                evalRec.innerText = "Pertahankan kebiasaan hidup aktifmu! Kamu sudah memahami konsep kekuatan, kelenturan, dan daya tahan dengan sangat matang. Lanjutkan praktik rutin di rumah.";
+            } else if(quizScore >= 60) {
+                evalStatus.innerText = "Tuntas";
+                evalStatus.className = "text-[11px] px-2.5 py-0.5 bg-blue-100 text-blue-800 rounded-full font-bold";
+                evalRec.innerText = "Hasil belajarmu sudah baik. Fokuskan kembali membaca sub-materi teknik latihan fisik serta manfaat keselamatan agar pemahamanmu semakin maksimal.";
+            } else {
+                evalStatus.innerText = "Perlu Bimbingan";
+                evalStatus.className = "text-[11px] px-2.5 py-0.5 bg-amber-100 text-amber-800 rounded-full font-bold";
+                evalRec.innerText = "Sangat disarankan untuk membaca ulang modul materi A (Kekuatan), B (Kelenturan), dan C (Daya Tahan). Jangan ragu berdiskusi dengan guru PJOK!";
+            }
+        }
+
+        /* -------------------------------------------------------------------------
+         * 5. DATA SAVING & GOOGLE INTEGRATION LOGIC
+         * ------------------------------------------------------------------------- */
+        function openConfigModal() {
+            document.getElementById('config-modal').classList.remove('hidden');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('config-modal').classList.add('hidden');
+        }
+
+        function saveConfiguration() {
+            const docsUrl = document.getElementById('cfg-docs-url').value.trim();
+            const scriptUrl = document.getElementById('cfg-script-url').value.trim();
+            const sheetsUrl = document.getElementById('cfg-sheets-url').value.trim();
+
+            config.docsUrl = docsUrl;
+            config.scriptUrl = scriptUrl;
+            config.sheetsUrl = sheetsUrl;
+
+            localStorage.setItem('pjok_docs_url', docsUrl);
+            localStorage.setItem('pjok_script_url', scriptUrl);
+            localStorage.setItem('pjok_sheets_url', sheetsUrl);
+
+            closeConfigModal();
+            showToast("Konfigurasi integrasi Google berhasil disimpan!", "success");
+        }
+
+        function checkGDocsLink(e) {
+            if(!config.docsUrl) {
+                e.preventDefault();
+                showToast("URL Google Docs belum dikonfigurasi oleh Guru!", "warning");
+                openConfigModal();
+            } else {
+                e.currentTarget.href = config.docsUrl;
+            }
+        }
+
+        function checkGSheetsLink(e) {
+            if(!config.sheetsUrl) {
+                e.preventDefault();
+                showToast("URL Google Sheets rekap nilai belum dikonfigurasi!", "warning");
+                openConfigModal();
+            } else {
+                e.currentTarget.href = config.sheetsUrl;
+            }
+        }
+
+        function saveStudentData() {
+            const name = document.getElementById('user-name').value.trim();
+            const studentClass = document.getElementById('user-class').value;
+
+            // Form Validation
+            if(!name || !studentClass) {
+                showToast("Mohon lengkapi NAMA dan KELAS di halaman Beranda!", "warning");
+                switchTab('beranda');
+                return;
+            }
+
+            if(!config.scriptUrl) {
+                showToast("Simpan Gagal: URL Web App Google Sheets belum dikonfigurasi!", "error");
+                openConfigModal();
+                return;
+            }
+
+            // Save to LocalStorage first
+            localStorage.setItem('pjok_user_name', name);
+            localStorage.setItem('pjok_user_class', studentClass);
+
+            // Prepare Payload
+            const payload = {
+                timestamp: new Date().toLocaleString('id-ID'),
+                nama: name,
+                kelas: studentClass,
+                nilaiKuis: quizScore,
+                refleksiPraktik: document.getElementById('practice-reflection').value || '-',
+                refleksiQ1: document.getElementById('ref-q1').value || '-',
+                refleksiQ2: document.getElementById('ref-q2').value || '-',
+                refleksiQ3: document.getElementById('ref-q3').value || '-'
+            };
+
+            showToast("Mengirim data rekap ke Google Sheets...", "info");
+
+            // Fetch request to Google Apps Script Web App
+            fetch(config.scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                showToast("Data hasil kuis & refleksi berhasil tersimpan di Google Sheets!", "success");
+            })
+            .catch(err => {
+                console.error(err);
+                showToast("Gagal menyimpan data. Periksa koneksi internet atau script URL!", "error");
+            });
+        }
+
+        /* -------------------------------------------------------------------------
+         * 6. HELPER TOAST NOTIFICATION SYSTEM
+         * ------------------------------------------------------------------------- */
+        function showToast(msg, type = "info") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = msg;
+
+            if(type === "success") {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.className = "w-5 h-5 text-emerald-400";
+            } else if(type === "warning") {
+                toastIcon.setAttribute('data-lucide', 'alert-triangle');
+                toastIcon.className = "w-5 h-5 text-amber-400";
+            } else if(type === "error") {
+                toastIcon.setAttribute('data-lucide', 'x-circle');
+                toastIcon.className = "w-5 h-5 text-rose-400";
+            } else {
+                toastIcon.setAttribute('data-lucide', 'info');
+                toastIcon.className = "w-5 h-5 text-blue-400";
+            }
+
+            lucide.createIcons();
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
